@@ -1,3 +1,11 @@
+/*
+Race game - Old style race game with modern atributes! 
+
+Copyright(C) 2020 Peter S - m4sh1lo@protonmail.com
+This project is copyrighted under Apache License Version 2.0, January 2004
+You can read the license included in project or visit: http://www.apache.org/licenses/
+*/
+
 // Import system modules
 #include <SFML/Graphics.hpp>
 #include <math.h>
