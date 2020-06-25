@@ -1,5 +1,5 @@
 /*
-Race game - Old style race game with modern atributes! 
+Race game - Old style race game with modern attributes! 
 
 Copyright(C) 2020 Peter S - m4sh1lo@protonmail.com
 This project is copyrighted under Apache License Version 2.0, January 2004
@@ -20,7 +20,7 @@ int windowHeight = 720;
 int roadWidth = 2000;
 int segmentLenght = 200;
 
-float camD = 0.84;
+float camD = 0.84; // Camera depth
 
 // Render quads for drawing objects
 void drawQuad(RenderWindow &win, Color color, int x1, int y1, int w1, int x2, int y2, int w2)
