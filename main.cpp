@@ -15,10 +15,10 @@ using namespace sf;
 using namespace std;
 
 // Game variables
-int windowWidth = 1280;
-int windowHeight = 720;
+int windowWidth = 800;
+int windowHeight = 400;
 int roadWidth = 2000;
-int segmentLenght = 200;
+int segmentLenght = 300;
 
 float camD = 0.84; // Camera depth
 
@@ -108,7 +108,12 @@ int main()
 
     vector<Line> lines;
 
-    // Setup for road curves
+    Texture playerCar;
+    playerCar.loadFromFile("assets/car.png");
+
+    Sprite carSprite(playerCar);
+
+    // Setup for road curves and objects
     for(int i = 0; i < 1600; i++)
     {
         Line line;
@@ -120,7 +125,7 @@ int main()
         if(i%17 == 0)            {line.spriteX = 2.0f;  line.sprite = object[6];}
         if(i > 300 && i%20 == 0) {line.spriteX = -0.7f; line.sprite = object[4];}
         if(i > 300 && i%20 == 0) {line.spriteX = -1.2f; line.sprite = object[1];}
-        if(i == 400)             {line.spriteX = -1.2f;  line.sprite = object[7];}
+        if(i == 400 && i%4 == 0) {line.spriteX = -1.6f;  line.sprite = object[7];}
         if(i > 750)              {line.y = sin(i / 30.0f) * 1500;}
 
         lines.push_back(line);
@@ -128,7 +133,7 @@ int main()
 
     int N = lines.size();
     int pos = 0; // Position of the camera
-    int H = 1500; // Camera height
+    int H = 2000; // Camera height
 
     float playerX = 0; // Player position in X axis
 
@@ -144,13 +149,29 @@ int main()
             }
         }
 
-        int speed = 200; // Car speed
+        int speed = 230; // Car speed
+
+        printf("Actual position: %f \n", playerX);
+
+        Font font;
+        if(!font.loadFromFile("assets/Fonts/Monospace/Monospace.ttf"))
+        {
+            return EXIT_FAILURE;
+        }
+
+        //Text text("Player actual position: ", font, 16);
+
+        if(playerX >= 1.3 || playerX <= -1.3)
+        {
+            speed -= 80;
+        }
 
         // Keyboard events
-        if(Keyboard::isKeyPressed(Keyboard::Left)  || Keyboard::isKeyPressed(Keyboard::A))   {playerX += -1.0f / 32.0f;}
-        if(Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))   {playerX +=  1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Left)  || Keyboard::isKeyPressed(Keyboard::A) && playerX >= -5)   {playerX += -1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D) && playerX <= 5)    {playerX +=  1.0f / 32.0f;}
         if(Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))    {speed = 0;}
         if(Keyboard::isKeyPressed(Keyboard::LShift))                                         {speed *= 2;}
+        if(Keyboard::isKeyPressed(Keyboard::Escape))                                         {exit(0);}
 
         pos += speed; // Set the position according to the speed
 
@@ -163,8 +184,8 @@ int main()
         int startPos = pos / segmentLenght; // Camera start position
         int camH = lines[startPos].y + H; // Initial camera height
 
-        if(speed > 0) {bgSprite.move(-lines[startPos].curve * 2, 0);} // Move all the sprites in the scene
-        if(speed < 0) {bgSprite.move( lines[startPos].curve * 2, 0);} // Stop all the sprites in the scene
+        if(speed > 0) {bgSprite.move(-lines[startPos].curve * 2, 0);} // Move bg sprites in the scene
+        if(speed < 0) {bgSprite.move( lines[startPos].curve * 2, 0);} // Stop bg sprites in the scene
 
         int maxY = windowHeight; // Determine a limit in the Y axis
 
@@ -173,7 +194,7 @@ int main()
         for(int n = startPos; n < startPos + 300; n++)
         {
             Line &l = lines[n%N];
-            l.cameraProject(playerX * roadWidth - x, camH, startPos * segmentLenght - (n > N?N * segmentLenght:0));
+            l.cameraProject(playerX * roadWidth - x, camH, startPos * segmentLenght - (n >= N?N * segmentLenght:0));
             x += dx;
             dx += l.curve;
 
@@ -183,9 +204,9 @@ int main()
 
             maxY = l.Y;
 
-            Color grass =  (n / 3)&2?Color(16, 200 / 4, 16):Color(0, 154 / 4, 0); // Set the color of the grass (default is dark green)
-            Color rumble = (n / 3)&2?Color(255 / 4, 255 / 4, 255 / 4):Color(0, 0, 0); // Set the color of the rumble (default is white)
-            Color road =   (n / 3)&2?Color(107 / 4, 107 / 4, 107 / 4):Color(105 / 4, 105 / 4, 105 / 4); // Set the color of the road (default is grey)
+            Color grass     =   (n / 3)&2?Color(16, 200 / 4, 16):Color(0, 154 / 4, 0); // Set the color of the grass (default is dark green)
+            Color rumble    =   (n / 3)&2?Color(255 / 4, 255 / 4, 255 / 4):Color(0, 0, 0); // Set the color of the rumble (default is white)
+            Color road      =   (n / 3)&2?Color(107 / 4, 107 / 4, 107 / 4):Color(105 / 4, 105 / 4, 105 / 4); // Set the color of the road (default is grey)
 
             Line p = lines[(n - 1)%N];
 
@@ -194,7 +215,9 @@ int main()
             drawQuad(window, road, p.X, p.Y, p.Z, l.X, l.Y, l.Z); // Draw road
         }
 
-        for(int n = startPos + 300; n > startPos; n--) {lines[n%N].drawSprite(window);} // Draw objects
+        for(int n = startPos + 300; n > startPos; n--) {lines[n%N].drawSprite(window);}
+
+        //window.draw(text);
 
         window.display();
     }
