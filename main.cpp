@@ -1,9 +1,6 @@
 /*
 Race game - Old style race game with modern attributes! 
-
-Copyright(C) 2020 Peter S - m4sh1lo@protonmail.com
-This project is copyrighted under Apache License Version 2.0, January 2004
-You can read the license included in project or visit: http://www.apache.org/licenses/
+Coded by Peter S - m4sh1lo@protonmail.com
 */
 
 // Import system modules
@@ -82,16 +79,16 @@ struct Line
 // The main function
 int main()
 {
-    RenderWindow window(VideoMode(windowWidth,windowHeight), "Race game"); // Create the main window
+    RenderWindow window(VideoMode(windowWidth, windowHeight), "Race game"); // Create the main window
     window.setFramerateLimit(60); // Limit the framerate to 60 FPS
 
     Texture texture[50];
     Sprite object[50];
 
     // Search for image files inside the assets folder
-    for(int i=1; i <= 7; i++)
+    for(int i = 1; i <= 7; i++)
     {
-        texture[i].loadFromFile("assets/" + to_string(i)+".png");
+        texture[i].loadFromFile("assets/" + to_string(i) + ".png");
         texture[i].setSmooth(true);
         object[i].setTexture(texture[i]);
     }
@@ -119,14 +116,14 @@ int main()
         Line line;
         line.z = i*segmentLenght;
 
-        if(i > 300 && i < 700)   {line.curve = 0.5f;}
-        if(i > 1100)             {line.curve = -0.7;}
-        if(i < 300 && i%20 == 0) {line.spriteX = -2.5f; line.sprite = object[5];}
-        if(i%17 == 0)            {line.spriteX = 2.0f;  line.sprite = object[6];}
-        if(i > 300 && i%20 == 0) {line.spriteX = -0.7f; line.sprite = object[4];}
-        if(i > 300 && i%20 == 0) {line.spriteX = -1.2f; line.sprite = object[1];}
-        if(i == 400 && i%4 == 0) {line.spriteX = -1.6f;  line.sprite = object[7];}
-        if(i > 750)              {line.y = sin(i / 30.0f) * 1500;}
+        if(i > 300  && i < 700)     {line.curve   = 0.5f;}
+        if(i > 1100)                {line.curve   = -0.7;}
+        if(i > 750)                 {line.y       = sin(i / 30.0f) * 1500;}
+        if(i%4  == 0)               {line.spriteX = -2.2f;  line.sprite = object[6];}
+        if(i%17 == 0)               {line.spriteX =  2.0f;  line.sprite = object[5];}
+        if(i%8 == 0)                {line.spriteX =  2.2f;  line.sprite = object[6];}
+        if(i%20 == 0)               {line.spriteX = -2.0f;  line.sprite = object[5];}
+        if(i == 400 && i%4  == 0)   {line.spriteX = -1.6f;  line.sprite = object[7];}
 
         lines.push_back(line);
     }
@@ -163,7 +160,7 @@ int main()
 
         if(playerX >= 1.3 || playerX <= -1.3)
         {
-            speed -= 80;
+            speed = 80;
         }
 
         // Keyboard events
@@ -204,9 +201,9 @@ int main()
 
             maxY = l.Y;
 
-            Color grass     =   (n / 3)&2?Color(16, 200 / 4, 16):Color(0, 154 / 4, 0); // Set the color of the grass (default is dark green)
-            Color rumble    =   (n / 3)&2?Color(255 / 4, 255 / 4, 255 / 4):Color(0, 0, 0); // Set the color of the rumble (default is white)
-            Color road      =   (n / 3)&2?Color(107 / 4, 107 / 4, 107 / 4):Color(105 / 4, 105 / 4, 105 / 4); // Set the color of the road (default is grey)
+            Color grass     =   (n / 3)&2?Color(16, 200, 16):Color(0, 154, 0); // Set the color of the grass (default is dark green)
+            Color rumble    =   (n / 3)&2?Color(255, 255, 255):Color(0, 0, 0); // Set the color of the rumble (default is white)
+            Color road      =   (n / 3)&2?Color(107, 107, 107):Color(105, 105, 105); // Set the color of the road (default is grey)
 
             Line p = lines[(n - 1)%N];
 
