@@ -80,7 +80,7 @@ struct Line
 int main()
 {
     RenderWindow window(VideoMode(windowWidth, windowHeight), "Race game"); // Create the main window
-    window.setFramerateLimit(60); // Limit the framerate to 60 FPS
+    window.setFramerateLimit(60);                                           // Limit the framerate to 60 FPS
 
     Texture texture[50];
     Sprite object[50];
@@ -129,7 +129,7 @@ int main()
     }
 
     int N = lines.size();
-    int pos = 0; // Position of the camera
+    int pos = 0;  // Position of the camera
     int H = 2000; // Camera height
 
     float playerX = 0; // Player position in X axis
@@ -146,9 +146,12 @@ int main()
             }
         }
 
-        int speed = 230; // Car speed
+        int speed; // Car speed
+        int topSpeed = 420;
+        int acceleration = 2;
+        int breakForce = acceleration * 2;
 
-        printf("Actual position: %f \n", playerX);
+        //printf("Actual position: %f \n", playerX); // Debug log
 
         Font font;
         if(!font.loadFromFile("assets/Fonts/Monospace/Monospace.ttf"))
@@ -156,30 +159,39 @@ int main()
             return EXIT_FAILURE;
         }
 
-        //Text text("Player actual position: ", font, 16);
+        Text text("Development build", font, 16);
 
         if(playerX >= 1.3 || playerX <= -1.3)
         {
-            speed = 80;
+            topSpeed = 80;
         }
 
         // Keyboard events
-        if(Keyboard::isKeyPressed(Keyboard::Left)  || Keyboard::isKeyPressed(Keyboard::A) && playerX >= -5)   {playerX += -1.0f / 32.0f;}
-        if(Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D) && playerX <= 5)    {playerX +=  1.0f / 32.0f;}
-        if(Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S))    {speed = 0;}
-        if(Keyboard::isKeyPressed(Keyboard::LShift))                                         {speed *= 2;}
-        if(Keyboard::isKeyPressed(Keyboard::Escape))                                         {exit(0);}
+        if(Keyboard::isKeyPressed(Keyboard::Left)                      || Keyboard::isKeyPressed(Keyboard::A) && playerX >= -5)        {playerX += -1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Right)                     || Keyboard::isKeyPressed(Keyboard::D) && playerX <= 5)         {playerX +=  1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Up) && speed < topSpeed    || Keyboard::isKeyPressed(Keyboard::W) && speed < topSpeed )    {speed += acceleration;} else {speed -= 1;}
+        if(Keyboard::isKeyPressed(Keyboard::Down)                      || Keyboard::isKeyPressed(Keyboard::S))                         {speed -= breakForce;}
+        if(Keyboard::isKeyPressed(Keyboard::LShift))                                                                                   {speed *= 2;}
+        if(Keyboard::isKeyPressed(Keyboard::Escape))                                                                                   {exit(0);}
 
+        // Prevent negative velocity values
+        if(speed < 0)
+        {
+            speed = 0;
+        }
+
+        printf("Car valocity: %i km/h \n", speed); // Debug log
+        
         pos += speed; // Set the position according to the speed
 
         while(pos >= N * segmentLenght) {pos -= N * segmentLenght;} // Restart the track for create a loop simulation
         while(pos < 0)                  {pos += N * segmentLenght;} // Start car running
 
         window.clear(Color::Black); // Set the main window color to black
-        window.draw(bgSprite); // Draw the background sprite
+        window.draw(bgSprite);      // Draw the background sprite
 
         int startPos = pos / segmentLenght; // Camera start position
-        int camH = lines[startPos].y + H; // Initial camera height
+        int camH = lines[startPos].y + H;   // Initial camera height
 
         if(speed > 0) {bgSprite.move(-lines[startPos].curve * 2, 0);} // Move bg sprites in the scene
         if(speed < 0) {bgSprite.move( lines[startPos].curve * 2, 0);} // Stop bg sprites in the scene
@@ -201,20 +213,20 @@ int main()
 
             maxY = l.Y;
 
-            Color grass     =   (n / 3)&2?Color(16, 200, 16):Color(0, 154, 0); // Set the color of the grass (default is dark green)
-            Color rumble    =   (n / 3)&2?Color(255, 255, 255):Color(0, 0, 0); // Set the color of the rumble (default is white)
-            Color road      =   (n / 3)&2?Color(107, 107, 107):Color(105, 105, 105); // Set the color of the road (default is grey)
+            Color grass     =   (n / 3)&2?Color(16, 200, 16):Color(0, 154, 0);       // Set the color of the grass      (default is green)
+            Color rumble    =   (n / 3)&2?Color(255, 255, 255):Color(0, 0, 0);       // Set the color of the rumble     (default is white)
+            Color road      =   (n / 3)&2?Color(107, 107, 107):Color(105, 105, 105); // Set the color of the road       (default is grey)
 
             Line p = lines[(n - 1)%N];
 
-            drawQuad(window, grass, 0, p.Y, windowWidth, 0, l.Y, windowWidth); // Draw the grass
+            drawQuad(window, grass, 0, p.Y, windowWidth, 0, l.Y, windowWidth);    // Draw the grass
             drawQuad(window, rumble, p.X, p.Y, p.Z * 1.2f, l.X, l.Y, l.Z * 1.2f); // Draw the road rumble
-            drawQuad(window, road, p.X, p.Y, p.Z, l.X, l.Y, l.Z); // Draw road
+            drawQuad(window, road, p.X, p.Y, p.Z, l.X, l.Y, l.Z);                 // Draw road
         }
 
         for(int n = startPos + 300; n > startPos; n--) {lines[n%N].drawSprite(window);}
 
-        //window.draw(text);
+        window.draw(text);
 
         window.display();
     }
