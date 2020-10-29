@@ -6,14 +6,15 @@ Coded by Peter S - m4sh1lo@protonmail.com
 // Import system modules
 #include <SFML/Graphics.hpp>
 #include <math.h>
+#include <sstream>
 
 // Define namespaces
 using namespace sf;
 using namespace std;
 
 // Game variables
-int windowWidth = 800;
-int windowHeight = 400;
+int windowWidth = 1366;
+int windowHeight = 768;
 int roadWidth = 2000;
 int segmentLenght = 300;
 
@@ -167,12 +168,12 @@ int main()
         }
 
         // Keyboard events
-        if(Keyboard::isKeyPressed(Keyboard::Left)                      || Keyboard::isKeyPressed(Keyboard::A) && playerX >= -5)        {playerX += -1.0f / 32.0f;}
-        if(Keyboard::isKeyPressed(Keyboard::Right)                     || Keyboard::isKeyPressed(Keyboard::D) && playerX <= 5)         {playerX +=  1.0f / 32.0f;}
-        if(Keyboard::isKeyPressed(Keyboard::Up) && speed < topSpeed    || Keyboard::isKeyPressed(Keyboard::W) && speed < topSpeed )    {speed += acceleration;} else {speed -= 1;}
-        if(Keyboard::isKeyPressed(Keyboard::Down)                      || Keyboard::isKeyPressed(Keyboard::S))                         {speed -= breakForce;}
-        if(Keyboard::isKeyPressed(Keyboard::LShift))                                                                                   {speed *= 2;}
-        if(Keyboard::isKeyPressed(Keyboard::Escape))                                                                                   {exit(0);}
+        if(Keyboard::isKeyPressed(Keyboard::Left)                      || Keyboard::isKeyPressed(Keyboard::A) && playerX >= -5 && speed > 0)         {playerX += -1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Right)                     || Keyboard::isKeyPressed(Keyboard::D) && playerX <= 5  && speed > 0)         {playerX +=  1.0f / 32.0f;}
+        if(Keyboard::isKeyPressed(Keyboard::Up) && speed < topSpeed    || Keyboard::isKeyPressed(Keyboard::W) && speed < topSpeed )                  {speed += acceleration;} else {speed -= 1;}
+        if(Keyboard::isKeyPressed(Keyboard::Down)                      || Keyboard::isKeyPressed(Keyboard::S))                                       {speed -= breakForce;}
+        if(Keyboard::isKeyPressed(Keyboard::LShift))                                                                                                 {speed *= 2;}
+        if(Keyboard::isKeyPressed(Keyboard::Escape))                                                                                                 {exit(0);}
 
         // Prevent negative velocity values
         if(speed < 0)
